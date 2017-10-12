@@ -1,0 +1,8 @@
+[submodule "pyteamcity"]
+	path = pyteamcity
+	url = git@github.com:holstebroe/pyteamcity.git
+	branch = master
+[submodule "youtrack-rest-python-library"]
+	path = youtrack-rest-python-library
+	url = git@github.com:holstebroe/youtrack-rest-python-library.git
+	branch = master
