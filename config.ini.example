@@ -1,0 +1,11 @@
+[TeamCity]
+Host = teamcity.test.com
+Port = 80
+Protocol = http
+User = john_doe
+Password = secret123.
+
+[YouTrack]
+Host = youtrack.test.com
+User = john_doe
+Password = secret123.

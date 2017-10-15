@@ -1,12 +1,22 @@
 import json
 
+from configparser import ConfigParser
 from BuildFixes import BuildFixes
 from ChangeCommentParser import ChangeCommentParser
 from pyteamcity.pyteamcity.future import TeamCity
 
+config = ConfigParser()
+config.read('config.ini')
+teamcity_config = config['TeamCity']
+
 skip_failed_builds = True
 
-tc = TeamCity.from_environ()
+tc = TeamCity(
+    server = teamcity_config['Host'],
+    protocol = teamcity_config['Protocol'],
+    username = teamcity_config['User'],
+    password = teamcity_config['Password'],
+)
 since_date_string = '20170101T000000+0000'
 builds = tc.builds.all().filter(
     build_type="Hotfix",
