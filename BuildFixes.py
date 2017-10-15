@@ -12,3 +12,9 @@ class BuildFixes:
 
     def add_merged(self, youtrack_id):
         self.merged_references.append(youtrack_id)
+
+    def extend_fixes(self, id_list):
+        self.fixed_references.extend(id_list)
+
+    def extend_merges(self, id_list):
+        self.merged_references.extend(id_list)

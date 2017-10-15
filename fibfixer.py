@@ -4,6 +4,8 @@ from BuildFixes import BuildFixes
 from ChangeCommentParser import ChangeCommentParser
 from pyteamcity.pyteamcity.future import TeamCity
 
+skip_failed_builds = True
+
 tc = TeamCity.from_environ()
 since_date_string = '20170101T000000+0000'
 builds = tc.builds.all().filter(
@@ -34,7 +36,23 @@ for build_fix in build_fixes:
 
 build_fixes = sorted(build_fixes, key=lambda _: _.id)
 
+# Carry over fixes in failed builds, if they are to be ignored
+accumulated_fixes = []
+accumulated_merges = []
+if skip_failed_builds:
+    for build_fix in build_fixes:
+        if build_fix.status != "SUCCESS":
+            accumulated_fixes.extend(build_fix.fixed_references)
+            accumulated_merges.extend(build_fix.merged_references)
+        else:
+            build_fix.extend_fixes(accumulated_fixes)
+            build_fix.extend_merges(accumulated_merges)
+            accumulated_fixes = []
+            accumulated_merges = []
+
 for build_fix in build_fixes:
+    if skip_failed_builds and build_fix.status != "SUCCESS":
+        continue
     print(build_fix.build_type_id + ": " + build_fix.number + " - " + str(build_fix.id) + " - " + build_fix.status)
     for fix in build_fix.fixed_references:
         print("FIXED: " + fix)
