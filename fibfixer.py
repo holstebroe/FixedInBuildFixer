@@ -7,9 +7,10 @@ from pyteamcity.pyteamcity.future import TeamCity
 
 config = ConfigParser()
 config.read('config.ini')
-teamcity_config = config['TeamCity']
 
 skip_failed_builds = True
+
+teamcity_config = config['TeamCity']
 
 tc = TeamCity(
     server = teamcity_config['Host'],
@@ -17,7 +18,7 @@ tc = TeamCity(
     username = teamcity_config['User'],
     password = teamcity_config['Password'],
 )
-since_date_string = '20170101T000000+0000'
+since_date_string = '20160101T000000+0000'
 builds = tc.builds.all().filter(
     build_type="Hotfix",
     since_date=since_date_string,
@@ -68,3 +69,20 @@ for build_fix in build_fixes:
         print("FIXED: " + fix)
     for fix in build_fix.merged_references:
         print("MERGED: " + fix)
+
+
+# build you-track issue to build map
+fixedInBuildMap = {}
+
+for build_fix in build_fixes:
+    if skip_failed_builds and build_fix.status != "SUCCESS":
+        continue
+    for fix in build_fix.fixed_references:
+        if fix not in fixedInBuildMap:
+            fixedInBuildMap[fix] = build_fix.number
+    for fix in build_fix.merged_references:
+        if fix not in fixedInBuildMap:
+            fixedInBuildMap[fix] = build_fix.number
+
+for (issue_id, version) in fixedInBuildMap.items():
+    print(issue_id+" fixed in build "+version)
